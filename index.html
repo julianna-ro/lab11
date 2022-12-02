@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Display a map</title>
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+<script src="https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.js"></script>
+<link href="https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.css" rel="stylesheet" />
+<style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+    h2,
+    h3 {
+      margin: 10px;
+      font-size: 1.2em;
+    }
+    h3 {
+      font-size: 1em;
+    }
+    p {
+      font-size: 0.85em;
+      margin: 10px;
+      text-align: left;
+    }
+    .map-overlay {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      background: rgba(255, 255, 255, 0.8);
+      margin-right: 20px;
+      font-family: Arial, sans-serif;
+      overflow: auto;
+      border-radius: 3px;
+    }
+    #map {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 100%;
+    }
+    #features {
+      top: 0;
+      height: 100px;
+      margin-top: 20px;
+      width: 250px;
+    }
+    #legend {
+      padding: 10px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+      line-height: 18px;
+      height: 145px;
+      margin-bottom: 40px;
+      width: 170px;
+    }
+    .legend-key {
+      display: inline-block;
+      border-radius: 20%;
+      width: 10px;
+      height: 10px;
+      margin-right: 5px;
+    }
+</style>
+</head>
+<body>
+  <div id="map"></div>
+  <div class="map-overlay" id="features"> 
+    <h2>Building Footprint Map</h2>
+    <div id="pd"><p>Find Buildings Land Use</p></div>
+  </div>
+  <div class="map-overlay" id="legend"></div>
+
+<script>
+    // //define access token 
+    mapboxgl.accessToken = 'pk.eyJ1IjoianVsaWFubmFybyIsImEiOiJjbGFjd3ExdWkwZWkyM3JzM3pvdHp2Z2VtIn0.T1e69-VeU2_wsSI9zqpk2A'; 
+    //create map
+var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/juliannaro/clacyvwd4002d15qvadutzgm3', //map style URL from Mapbox Studio
+    zoom: 10,
+    center: [-75.15483081704296,39.98771088576627] // starting center
+	});
+
+</script>
+
+<script>
+
+
+// add legend to your map
+    var layers = ['Commercial land', 'Residential low', 'Residential medium', 'Residential high','Industrial land', 'Vacant', 'Park/open Space', 'Other'];
+    var colors = ['#d37536', '#f6c6d3', '#f67e9e','#c25b7f', '#5dc0ac',  '#a569bd', '#2a710a', '#000000'];
+    for (i = 0; i < layers.length; i++) {
+      var layer = layers[i];
+      var color = colors[i];
+      var item = document.createElement('div');
+      var key = document.createElement('span');
+      // var legend = document.createElement('legend');
+      key.className = 'legend-key';
+      key.style.backgroundColor = color;
+      var value = document.createElement('span');
+      value.innerHTML = layer;
+      item.appendChild(key);
+      item.appendChild(value);
+      legend.appendChild(item);
+    }
+
+ 
+
+    map.on('load', function() {
+      map.getCanvas().style.cursor = 'default';
+      map.fitBounds([
+          [-75.299998, 40.091772],
+          [-75.011607, 39.884492]
+        ]);
+        
+        // change info window on hover
+        map.on('mousemove', function(e) {
+          var states = map.queryRenderedFeatures(e.point, {
+            layers: ['buildings-lu'] // get from the mapbox top left layer information
+          });
+          
+          if (states.length > 0) {
+            document.getElementById('pd').innerHTML =
+              '<h3><strong> building id:' +
+              // states[0].properties.fid +
+              '</strong></h3><p><strong><em>' +
+              states[0].properties.landuse;
+          } else {
+            document.getElementById('pd').innerHTML =
+              '<p>The building id is: </p>';
+          }
+        });
+});
+
+  </script> 
+</body>
+</html>}
